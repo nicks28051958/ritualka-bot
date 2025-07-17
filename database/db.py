@@ -224,6 +224,23 @@ class Database:
         
         conn.close()
         return products
+
+    async def add_product(self, name: str, price: float, category: str = None,
+                           description: str = None, photo_path: str = "photos/placeholder.jpg"):
+        """Добавление нового товара"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            INSERT INTO products (name, description, price, category, photo_path)
+            VALUES (?, ?, ?, ?, ?)
+            """,
+            (name, description, price, category, photo_path)
+        )
+
+        conn.commit()
+        conn.close()
     
     async def create_memory_record(self, telegram_id: int, name: str, birth_date: str, death_date: str, memory_text: str, photo_path: str, html_path: str):
         """Создание записи памяти"""
