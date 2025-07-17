@@ -9,6 +9,7 @@ from keyboards.main_keyboard import (
     get_cancel_keyboard,
     get_ai_lawyer_actions_keyboard  # Новый импорт!
 )
+from config import ADMIN_IDS
 from services.openai_service import OpenAIService
 from database.db import Database
 from states.states import AIHelper
@@ -42,7 +43,10 @@ async def process_ai_question(message: Message, state: FSMContext, db: Database)
     """Обработка вопроса для AI-помощника"""
     if message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Действие отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Действие отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
 
     question = message.text.strip()
@@ -116,5 +120,8 @@ async def ai_lawyer_ask_again(call: CallbackQuery, state: FSMContext):
 @router.callback_query(F.data == "ai_lawyer:to_main")
 async def ai_lawyer_to_main(call: CallbackQuery, state: FSMContext):
     await state.clear()
-    await call.message.answer("Вы вернулись в главное меню.", reply_markup=get_main_keyboard())
+    await call.message.answer(
+        "Вы вернулись в главное меню.",
+        reply_markup=get_main_keyboard(is_admin=call.from_user.id in ADMIN_IDS)
+    )
     await call.answer()

@@ -9,8 +9,10 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 # OpenAI API Key
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-# Admin Telegram ID
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+# Admin Telegram IDs (comma separated list)
+ADMIN_IDS = [
+    int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x
+]
 
 # Database
 DATABASE_PATH = "bot_database.db"

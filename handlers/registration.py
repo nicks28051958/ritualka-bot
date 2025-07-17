@@ -15,6 +15,7 @@ from keyboards.main_keyboard import (
     get_main_keyboard,
     get_cancel_keyboard
 )
+from config import ADMIN_IDS
 from database.db import Database
 
 router = Router()
@@ -215,7 +216,10 @@ async def confirm_registration(callback: CallbackQuery, state: FSMContext, db: D
         text += "Для возврата в главное меню нажмите кнопку ниже."
         
         await callback.message.edit_text(text, parse_mode="HTML")
-        await callback.message.answer("🏠 Главное меню", reply_markup=get_main_keyboard())
+        await callback.message.answer(
+            "🏠 Главное меню",
+            reply_markup=get_main_keyboard(is_admin=callback.from_user.id in ADMIN_IDS)
+        )
     else:
         text = "❌ <b>Ошибка при сохранении данных</b>\n\n"
         text += "Пожалуйста, попробуйте еще раз или обратитесь к администратору."
@@ -231,7 +235,10 @@ async def cancel_registration(callback: CallbackQuery, state: FSMContext):
     
     await state.clear()
     await callback.message.edit_text("❌ Регистрация отменена.")
-    await callback.message.answer("🏠 Главное меню", reply_markup=get_main_keyboard())
+    await callback.message.answer(
+        "🏠 Главное меню",
+        reply_markup=get_main_keyboard(is_admin=callback.from_user.id in ADMIN_IDS)
+    )
 
 @router.callback_query(F.data == "registration:back")
 async def back_to_registration(callback: CallbackQuery):
@@ -475,4 +482,7 @@ async def process_relationship(message: Message, state: FSMContext):
 async def cancel_input(message: Message, state: FSMContext):
     """Отмена ввода данных"""
     await state.clear()
-    await message.answer("❌ Ввод данных отменен.", reply_markup=get_main_keyboard()) 
+    await message.answer(
+        "❌ Ввод данных отменен.",
+        reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+    )

@@ -4,6 +4,7 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 
 from keyboards.main_keyboard import get_main_keyboard
+from config import ADMIN_IDS
 
 router = Router()
 
@@ -26,7 +27,7 @@ async def cmd_start(message: Message, state: FSMContext):
     await message.answer(
         f"Пожалуйста, выберите нужный раздел в меню ниже.\n\n"
         f"Если вы не уверены, с чего начать — нажмите <b>«Помощь»</b>.",
-        reply_markup=get_main_keyboard()
+        reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
     )
 
 # Обработчик кнопки «🏠 Главное меню»
@@ -36,7 +37,7 @@ async def cmd_home(message: Message, state: FSMContext):
     # Повторяем логику главного меню
     await message.answer(
         "Вы вернулись в главное меню.",
-        reply_markup=get_main_keyboard()
+        reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
     )
 
 # Обработчик команды и кнопки /help и «Помощь»
@@ -54,5 +55,5 @@ async def cmd_help(message: Message, state: FSMContext):
         "🕯️ Уголок памяти — создать мемориал\n"
         "👤 Регистрация — зарегистрировать вас в системе\n\n"
         "Просто нажмите на нужную кнопку внизу.",
-        reply_markup=get_main_keyboard()
+        reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
     )

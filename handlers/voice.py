@@ -6,6 +6,7 @@ from aiogram.types import Message, CallbackQuery, Voice, InlineKeyboardMarkup, I
 from aiogram.fsm.context import FSMContext
 from services.openai_service import OpenAIService
 from keyboards.main_keyboard import get_main_keyboard
+from config import ADMIN_IDS
 from states.states import AIHelper, ClientRegistration, FuneralForm, MemoryRecord
 
 router = Router()
@@ -129,7 +130,10 @@ async def confirm_voice(callback: CallbackQuery, state: FSMContext, db):
         await process_memory_text(fake_message, state, db)
     else:
         await callback.message.answer(f"📝 Распознанный текст:\n<code>{transcript}</code>", parse_mode="HTML")
-        await callback.message.answer("Выберите действие из меню.", reply_markup=get_main_keyboard())
+        await callback.message.answer(
+            "Выберите действие из меню.",
+            reply_markup=get_main_keyboard(is_admin=callback.from_user.id in ADMIN_IDS)
+        )
     await state.update_data(voice_transcript=None, voice_state=None)
     await callback.answer()
 
@@ -217,4 +221,7 @@ async def cancel_voice(callback: CallbackQuery, state: FSMContext):
     await callback.answer("Отправка голосового сообщения отменена")
     await state.clear()
     await callback.message.edit_text("❌ Отправка голосового сообщения отменена.")
-    await callback.message.answer("🏠 Главное меню", reply_markup=get_main_keyboard()) 
+    await callback.message.answer(
+        "🏠 Главное меню",
+        reply_markup=get_main_keyboard(is_admin=callback.from_user.id in ADMIN_IDS)
+    )
