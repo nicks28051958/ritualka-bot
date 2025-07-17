@@ -9,6 +9,8 @@ from keyboards.main_keyboard import (
     get_main_keyboard,
     get_admin_panel_keyboard,
     get_cancel_keyboard,
+    get_admin_cancel_keyboard,
+    get_admin_category_keyboard,
 )
 from states.states import AddProduct, RemoveProduct
 from database.db import Database
@@ -45,59 +47,64 @@ async def add_product(message: Message, state: FSMContext):
         return
     await state.set_state(AddProduct.waiting_for_category)
     await message.answer(
-        "Введите категорию товара:",
-        reply_markup=get_cancel_keyboard(),
+        "Выберите категорию товара:",
+        reply_markup=get_admin_category_keyboard(prefix="add_cat"),
     )
 
 
 @router.message(AddProduct.waiting_for_category)
 async def process_product_category(message: Message, state: FSMContext):
-    if message.text.lower() == "❌ отмена":
+    text = message.text.lower()
+    if text in {"❌ отмена"}:
+        await state.clear()
+        await message.answer(
+            "❌ Добавление товара отменено.",
+            reply_markup=get_admin_panel_keyboard(),
+        )
+    elif text in {"⬅️ назад"}:
+        await state.clear()
+        await message.answer(
+            "🏠 Главное меню",
+            reply_markup=get_main_keyboard(is_admin=True),
+        )
+    else:
+        await message.answer(
+            "Пожалуйста, выберите категорию из списка.",
+            reply_markup=get_admin_category_keyboard(prefix="add_cat"),
+        )
+
+
+@router.callback_query(F.data.startswith("add_cat:"))
+async def admin_category_chosen(callback: CallbackQuery, state: FSMContext):
+    if not is_admin(callback.from_user.id):
+        await callback.answer("❌ Нет доступа", show_alert=True)
+        return
+    category = callback.data.split(":")[1]
+    await state.update_data(category=category)
+    await state.set_state(AddProduct.waiting_for_name)
+    await callback.message.edit_text("Введите название товара:")
+    await callback.message.answer(
+        "Введите название товара:",
+        reply_markup=get_admin_cancel_keyboard(),
+    )
+    await callback.answer()
+
+
+@router.message(AddProduct.waiting_for_name)
+async def process_product_name(message: Message, state: FSMContext):
+    text = message.text.lower()
+    if text == "❌ отмена":
         await state.clear()
         await message.answer(
             "❌ Добавление товара отменено.",
             reply_markup=get_admin_panel_keyboard(),
         )
         return
-
-    category = message.text.strip()
-    await state.update_data(category=category)
-    await state.set_state(AddProduct.confirm_category)
-    await message.answer(
-        f"Категория товара: <b>{category}</b>",
-        reply_markup=get_confirm_keyboard("category"),
-    )
-
-
-@router.callback_query(F.data == "add_product:category:confirm")
-async def confirm_product_category(callback: CallbackQuery, state: FSMContext):
-    await callback.answer()
-    await state.set_state(AddProduct.waiting_for_name)
-    await callback.message.edit_text("Введите название товара:")
-    await callback.message.answer(
-        "Введите название товара:",
-        reply_markup=get_cancel_keyboard(),
-    )
-
-
-@router.callback_query(F.data == "add_product:category:edit")
-async def edit_product_category(callback: CallbackQuery, state: FSMContext):
-    await callback.answer()
-    await state.set_state(AddProduct.waiting_for_category)
-    await callback.message.edit_text("Введите категорию товара:")
-    await callback.message.answer(
-        "Введите категорию товара:",
-        reply_markup=get_cancel_keyboard(),
-    )
-
-
-@router.message(AddProduct.waiting_for_name)
-async def process_product_name(message: Message, state: FSMContext):
-    if message.text.lower() == "❌ отмена":
+    if text == "⬅️ назад":
         await state.clear()
         await message.answer(
-            "❌ Добавление товара отменено.",
-            reply_markup=get_admin_panel_keyboard(),
+            "🏠 Главное меню",
+            reply_markup=get_main_keyboard(is_admin=True),
         )
         return
 
@@ -117,7 +124,7 @@ async def confirm_product_name(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Введите цену товара:")
     await callback.message.answer(
         "Введите цену товара:",
-        reply_markup=get_cancel_keyboard(),
+        reply_markup=get_admin_cancel_keyboard(),
     )
 
 
@@ -128,17 +135,25 @@ async def edit_product_name(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Введите название товара:")
     await callback.message.answer(
         "Введите название товара:",
-        reply_markup=get_cancel_keyboard(),
+        reply_markup=get_admin_cancel_keyboard(),
     )
 
 
 @router.message(AddProduct.waiting_for_price)
 async def process_product_price(message: Message, state: FSMContext):
-    if message.text.lower() == "❌ отмена":
+    text = message.text.lower()
+    if text == "❌ отмена":
         await state.clear()
         await message.answer(
             "❌ Добавление товара отменено.",
             reply_markup=get_admin_panel_keyboard(),
+        )
+        return
+    if text == "⬅️ назад":
+        await state.clear()
+        await message.answer(
+            "🏠 Главное меню",
+            reply_markup=get_main_keyboard(is_admin=True),
         )
         return
 
@@ -179,7 +194,7 @@ async def edit_product_price(callback: CallbackQuery, state: FSMContext):
     await callback.message.edit_text("Введите цену товара:")
     await callback.message.answer(
         "Введите цену товара:",
-        reply_markup=get_cancel_keyboard(),
+        reply_markup=get_admin_cancel_keyboard(),
     )
 
 
@@ -187,24 +202,51 @@ async def edit_product_price(callback: CallbackQuery, state: FSMContext):
 async def remove_product(message: Message, state: FSMContext, db: Database):
     if not is_admin(message.from_user.id):
         return
-    products = await db.get_products_by_category()
+    await state.set_state(RemoveProduct.waiting_for_category)
+    await message.answer(
+        "Выберите категорию товара:",
+        reply_markup=get_admin_category_keyboard(prefix="remove_cat"),
+    )
+
+
+@router.callback_query(F.data.startswith("remove_cat:"))
+async def remove_choose_category(callback: CallbackQuery, state: FSMContext, db: Database):
+    if (await state.get_state()) != RemoveProduct.waiting_for_category.state:
+        return
+    if not is_admin(callback.from_user.id):
+        await callback.answer("❌ Нет доступа", show_alert=True)
+        return
+    category = callback.data.split(":")[1]
+    products = await db.get_products_by_category(category)
     if not products:
-        await message.answer("❌ Товары отсутствуют.")
+        await callback.answer("❌ Товары отсутствуют", show_alert=True)
+        await state.clear()
         return
     text = "Выберите ID товара для удаления:\n"
     for p in products:
         text += f"{p['id']}: {p['name']} ({p['price']} ₽)\n"
+    await state.update_data(category=category)
     await state.set_state(RemoveProduct.waiting_for_product_id)
-    await message.answer(text, reply_markup=get_cancel_keyboard())
+    await callback.message.edit_text(text)
+    await callback.message.answer(text, reply_markup=get_admin_cancel_keyboard())
+    await callback.answer()
 
 
 @router.message(RemoveProduct.waiting_for_product_id)
 async def process_remove_product(message: Message, state: FSMContext, db: Database):
-    if message.text.lower() == "❌ отмена":
+    text = message.text.lower()
+    if text == "❌ отмена":
         await state.clear()
         await message.answer(
             "❌ Удаление товара отменено.",
             reply_markup=get_admin_panel_keyboard(),
+        )
+        return
+    if text == "⬅️ назад":
+        await state.clear()
+        await message.answer(
+            "🏠 Главное меню",
+            reply_markup=get_main_keyboard(is_admin=True),
         )
         return
 

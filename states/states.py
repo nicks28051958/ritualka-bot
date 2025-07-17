@@ -51,4 +51,5 @@ class AddProduct(StatesGroup):
 
 class RemoveProduct(StatesGroup):
     """Состояния для удаления товара"""
+    waiting_for_category = State()
     waiting_for_product_id = State()
