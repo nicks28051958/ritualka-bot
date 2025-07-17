@@ -75,11 +75,22 @@ def get_cancel_keyboard() -> ReplyKeyboardMarkup:
     builder.add(KeyboardButton(text="❌ Отмена"))
     return builder.as_markup(resize_keyboard=True)
 
+# Клавиатура отмены для админских операций (ReplyKeyboard)
+def get_admin_cancel_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.add(KeyboardButton(text="❌ Отмена"))
+    builder.add(KeyboardButton(text="⬅️ Назад"))
+    builder.adjust(1)
+    return builder.as_markup(resize_keyboard=True)
+
 # Клавиатура категорий товаров (inline)
 CATEGORY_NAMES = {
     "coffin": "⚰️ Гробы",
     "wreath": "💐 Венки",
     "cross": "✝️ Кресты",
+    "monument": "🗿 Памятники",
+    "tombstone": "🪦 Надгробия",
+    "fence": "🚧 Ограды",
 }
 
 
@@ -90,6 +101,14 @@ def get_shop_categories_keyboard(categories: List[str]) -> InlineKeyboardMarkup:
         text = CATEGORY_NAMES.get(cat, cat)
         builder.add(InlineKeyboardButton(text=text, callback_data=f"shop:category:{cat}"))
     builder.add(InlineKeyboardButton(text="🛒 Все товары", callback_data="shop:category:all"))
+    builder.adjust(2)
+    return builder.as_markup()
+
+# Клавиатура выбора категории для админа (inline)
+def get_admin_category_keyboard(prefix: str = "admin_category") -> InlineKeyboardMarkup:
+    builder = InlineKeyboardBuilder()
+    for cat, text in CATEGORY_NAMES.items():
+        builder.add(InlineKeyboardButton(text=text, callback_data=f"{prefix}:{cat}"))
     builder.adjust(2)
     return builder.as_markup()
 

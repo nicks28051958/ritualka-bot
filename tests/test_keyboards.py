@@ -1,5 +1,9 @@
 import pytest
-from keyboards.main_keyboard import get_main_keyboard, get_admin_panel_keyboard
+from keyboards.main_keyboard import (
+    get_main_keyboard,
+    get_admin_panel_keyboard,
+    get_admin_category_keyboard,
+)
 
 
 def extract(btn_markup):
@@ -19,3 +23,11 @@ def test_admin_button_absent():
 def test_admin_panel_keyboard():
     buttons = extract(get_admin_panel_keyboard())
     assert buttons == ["➕ Добавить товар", "➖ Удалить товар", "⬅️ Назад"]
+
+
+def test_admin_category_keyboard():
+    markup = get_admin_category_keyboard()
+    btns = [btn.text for row in markup.inline_keyboard for btn in row]
+    assert "🗿 Памятники" in btns
+    assert "🪦 Надгробия" in btns
+    assert "🚧 Ограды" in btns
