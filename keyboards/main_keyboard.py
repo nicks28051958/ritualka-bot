@@ -6,16 +6,27 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder, ReplyKeyboardBuilder
 from typing import List
 
 # Главная клавиатура (ReplyKeyboard)
-def get_main_keyboard() -> ReplyKeyboardMarkup:
+def get_main_keyboard(is_admin: bool = False) -> ReplyKeyboardMarkup:
     builder = ReplyKeyboardBuilder()
     builder.add(KeyboardButton(text="🏛️ Организация похорон"))
     builder.add(KeyboardButton(text="🤖 AI-помощник по документам"))
     builder.add(KeyboardButton(text="🛍️ Товары"))
     builder.add(KeyboardButton(text="🕯️ Уголок памяти"))
     builder.add(KeyboardButton(text="👤 Регистрация"))
+    if is_admin:
+        builder.add(KeyboardButton(text="🛠 Админ-панель"))
     builder.add(KeyboardButton(text="🏠 Главное меню"))
     builder.add(KeyboardButton(text="ℹ️ Помощь"))
     builder.adjust(2)
+    return builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
+
+# Клавиатура админ-панели
+def get_admin_panel_keyboard() -> ReplyKeyboardMarkup:
+    builder = ReplyKeyboardBuilder()
+    builder.add(KeyboardButton(text="➕ Добавить товар"))
+    builder.add(KeyboardButton(text="➖ Удалить товар"))
+    builder.add(KeyboardButton(text="⬅️ Назад"))
+    builder.adjust(1)
     return builder.as_markup(resize_keyboard=True, one_time_keyboard=False)
 
 # Клавиатура выбора услуг для похорон (inline)

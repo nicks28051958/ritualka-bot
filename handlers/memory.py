@@ -8,6 +8,7 @@ from states.states import MemoryRecord
 from keyboards.main_keyboard import (
     get_memory_keyboard, get_memory_record_keyboard, get_cancel_keyboard, get_main_keyboard
 )
+from config import ADMIN_IDS
 from database.db import Database
 from services.memory_service import MemoryService
 
@@ -50,7 +51,10 @@ async def process_memory_photo(message: Message, state: FSMContext):
     """Обработка фото для записи памяти"""
     if message.text and message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Создание записи отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Создание записи отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
     
     photo_path = None
@@ -88,7 +92,10 @@ async def process_memory_name(message: Message, state: FSMContext):
     """Обработка имени для записи памяти"""
     if message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Создание записи отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Создание записи отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
     
     if not message.text or len(message.text.strip()) < 2:
@@ -109,7 +116,10 @@ async def process_birth_date(message: Message, state: FSMContext):
     """Обработка даты рождения"""
     if message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Создание записи отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Создание записи отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
     
     # Простая валидация даты
@@ -131,7 +141,10 @@ async def process_death_date(message: Message, state: FSMContext):
     """Обработка даты смерти"""
     if message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Создание записи отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Создание записи отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
     
     # Простая валидация даты
@@ -153,7 +166,10 @@ async def process_memory_text(message: Message, state: FSMContext, db: Database)
     """Обработка текста памяти и создание записи"""
     if message.text.lower() == "❌ отмена":
         await state.clear()
-        await message.answer("❌ Создание записи отменено.", reply_markup=get_main_keyboard())
+        await message.answer(
+            "❌ Создание записи отменено.",
+            reply_markup=get_main_keyboard(is_admin=message.from_user.id in ADMIN_IDS)
+        )
         return
     
     if not message.text or len(message.text.strip()) < 10:
