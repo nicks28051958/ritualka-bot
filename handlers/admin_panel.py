@@ -73,7 +73,8 @@ async def process_product_name(message: Message, state: FSMContext):
 async def confirm_product_name(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.set_state(AddProduct.waiting_for_price)
-    await callback.message.edit_text(
+    await callback.message.edit_text("Введите цену товара:")
+    await callback.message.answer(
         "Введите цену товара:",
         reply_markup=get_cancel_keyboard(),
     )
@@ -83,7 +84,8 @@ async def confirm_product_name(callback: CallbackQuery, state: FSMContext):
 async def edit_product_name(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.set_state(AddProduct.waiting_for_name)
-    await callback.message.edit_text(
+    await callback.message.edit_text("Введите вид товара:")
+    await callback.message.answer(
         "Введите вид товара:",
         reply_markup=get_cancel_keyboard(),
     )
@@ -132,7 +134,8 @@ async def confirm_product_price(callback: CallbackQuery, state: FSMContext, db: 
 async def edit_product_price(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
     await state.set_state(AddProduct.waiting_for_price)
-    await callback.message.edit_text(
+    await callback.message.edit_text("Введите цену товара:")
+    await callback.message.answer(
         "Введите цену товара:",
         reply_markup=get_cancel_keyboard(),
     )
