@@ -76,11 +76,19 @@ def get_cancel_keyboard() -> ReplyKeyboardMarkup:
     return builder.as_markup(resize_keyboard=True)
 
 # Клавиатура категорий товаров (inline)
-def get_shop_categories_keyboard() -> InlineKeyboardMarkup:
+CATEGORY_NAMES = {
+    "coffin": "⚰️ Гробы",
+    "wreath": "💐 Венки",
+    "cross": "✝️ Кресты",
+}
+
+
+def get_shop_categories_keyboard(categories: List[str]) -> InlineKeyboardMarkup:
+    """Клавиатура категорий товаров формируется динамически"""
     builder = InlineKeyboardBuilder()
-    builder.add(InlineKeyboardButton(text="⚰️ Гробы", callback_data="shop:category:coffin"))
-    builder.add(InlineKeyboardButton(text="💐 Венки", callback_data="shop:category:wreath"))
-    builder.add(InlineKeyboardButton(text="✝️ Кресты", callback_data="shop:category:cross"))
+    for cat in categories:
+        text = CATEGORY_NAMES.get(cat, cat)
+        builder.add(InlineKeyboardButton(text=text, callback_data=f"shop:category:{cat}"))
     builder.add(InlineKeyboardButton(text="🛒 Все товары", callback_data="shop:category:all"))
     builder.adjust(2)
     return builder.as_markup()
