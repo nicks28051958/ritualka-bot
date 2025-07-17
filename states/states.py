@@ -36,4 +36,12 @@ class AdminStates(StatesGroup):
 
 class AIHelper(StatesGroup):
     """Состояния для AI-помощника"""
-    waiting_for_question = State() 
+    waiting_for_question = State()
+
+
+class AddProduct(StatesGroup):
+    """Состояния для добавления товара администратором"""
+    waiting_for_name = State()
+    confirm_name = State()
+    waiting_for_price = State()
+    confirm_price = State()
