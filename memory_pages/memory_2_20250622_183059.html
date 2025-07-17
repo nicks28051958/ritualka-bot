@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Памяти Чижова Евгения Александровна</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .name {
+            font-size: 2.5em;
+            margin: 0;
+            font-weight: 300;
+        }
+        .dates {
+            font-size: 1.2em;
+            margin: 10px 0 0 0;
+            opacity: 0.9;
+        }
+        .photo-section {
+            padding: 30px;
+            text-align: center;
+        }
+        .photo {
+            max-width: 300px;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .memory-text {
+            padding: 30px;
+            line-height: 1.8;
+            font-size: 1.1em;
+            color: #333;
+            text-align: justify;
+        }
+        .candles {
+            background: #f8f9fa;
+            padding: 20px 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+        .candle-count {
+            font-size: 1.3em;
+            color: #6c757d;
+        }
+        .candle-icon {
+            font-size: 1.5em;
+            margin: 0 5px;
+        }
+        .footer {
+            background: #343a40;
+            color: white;
+            padding: 20px 30px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        @media (max-width: 600px) {
+            .name { font-size: 2em; }
+            .photo { max-width: 250px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="name">Чижова Евгения Александровна</h1>
+            <p class="dates">07.11.1935 — 14.06.2025</p>
+        </div>
+        
+        {% if photo_path %}
+        <div class="photo-section">
+            <img src="memory_photos/AgACAgIAAxkBAAPaaFgFQsFGG6EC9NhbFy8oQBXwkR4AAgv2MRub18BKVpS8FE3RPz4BAAMCAAN5AAM2BA.jpg" alt="Фото Чижова Евгения Александровна" class="photo">
+        </div>
+        {% endif %}
+        
+        <div class="memory-text">
+            В память о Чижовой Евгении Александровне.
+
+07.11.1935 - 14.06.2025
+
+Евгения Александровна для нас – это сияющий пример доброты, тепла и безграничной любви. Не просто бабушка, но яркая звезда, светившая на нашем жизненном пути. Ее бесконечная забота и внимание, ее мудрые советы и искренняя радость жизни были для нас бесценным сокровищем.
+
+Ее добросердечие и сострадание были неисчерпаемыми, и она светилась, как маяк, для всех, кто знал ее. Несмотря на все трудности и испытания, она оставалась верной своим принципам доброты и сострадания, показывая нам, как быть сильными и отзывчивыми.
+
+Наша любим
+        </div>
+        
+        <div class="candles">
+            <div class="candle-count">
+                <span class="candle-icon">🕯️</span>
+                Зажжено свечей памяти: 0
+                <span class="candle-icon">🕯️</span>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>Страница создана в память о дорогом человеке</p>
+            <p>22.06.2025 18:30</p>
+        </div>
+    </div>
+</body>
+</html>
+            
