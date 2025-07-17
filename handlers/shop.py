@@ -12,20 +12,16 @@ router = Router()
 
 @router.message(Command("shop"))
 @router.message(F.text == "🛍️ Товары")
-async def start_shop(message: Message):
+async def start_shop(message: Message, db: Database):
     """Начало работы с магазином"""
-    shop_text = """
-🛍️ **Каталог товаров**
+    categories = await db.get_categories()
+    shop_text = "\n".join([
+        "🛍️ <b>Каталог товаров</b>",
+        "",
+        "Выберите категорию товаров:",
+    ])
 
-Выберите категорию товаров:
-
-⚰️ **Гробы** - различные варианты гробов
-💐 **Венки** - траурные венки и композиции
-✝️ **Кресты** - надгробные кресты
-🛒 **Все товары** - полный каталог
-    """.strip()
-    
-    await message.answer(shop_text, reply_markup=get_shop_categories_keyboard())
+    await message.answer(shop_text, reply_markup=get_shop_categories_keyboard(categories))
 
 @router.callback_query(F.data.startswith("shop:category:"))
 async def show_category_products(callback: CallbackQuery, db: Database):
@@ -45,9 +41,9 @@ async def show_category_products(callback: CallbackQuery, db: Database):
     await show_product(callback, products, 0)
 
 @router.callback_query(F.data.startswith("shop:back"))
-async def back_to_categories(callback: CallbackQuery):
+async def back_to_categories(callback: CallbackQuery, db: Database):
     """Возврат к категориям"""
-    await start_shop(callback.message)
+    await start_shop(callback.message, db)
 
 @router.callback_query(F.data.startswith("product:select:"))
 async def select_product(callback: CallbackQuery, db: Database):

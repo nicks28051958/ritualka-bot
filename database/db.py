@@ -241,6 +241,25 @@ class Database:
 
         conn.commit()
         conn.close()
+
+    async def delete_product(self, product_id: int) -> bool:
+        """Удаление товара по ID"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
+        deleted = cursor.rowcount > 0
+        conn.commit()
+        conn.close()
+        return deleted
+
+    async def get_categories(self) -> List[str]:
+        """Получить список категорий товаров"""
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        cursor.execute("SELECT DISTINCT category FROM products WHERE category IS NOT NULL")
+        categories = [row[0] for row in cursor.fetchall()]
+        conn.close()
+        return categories
     
     async def create_memory_record(self, telegram_id: int, name: str, birth_date: str, death_date: str, memory_text: str, photo_path: str, html_path: str):
         """Создание записи памяти"""

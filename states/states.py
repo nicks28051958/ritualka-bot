@@ -41,7 +41,14 @@ class AIHelper(StatesGroup):
 
 class AddProduct(StatesGroup):
     """Состояния для добавления товара администратором"""
+    waiting_for_category = State()
+    confirm_category = State()
     waiting_for_name = State()
     confirm_name = State()
     waiting_for_price = State()
     confirm_price = State()
+
+
+class RemoveProduct(StatesGroup):
+    """Состояния для удаления товара"""
+    waiting_for_product_id = State()
