@@ -13,6 +13,7 @@ from database.db import Database
 from handlers import common, funeral, ai_lawyer, shop, memory
 from handlers import registration
 from handlers import voice
+from handlers import admin_panel
 
 
 async def main():
@@ -49,6 +50,7 @@ async def main():
     dp.include_router(shop.router)
     dp.include_router(memory.router)
     dp.include_router(registration.router)
+    dp.include_router(admin_panel.router)
     dp.include_router(voice.router)
     logger.info('Роутеры успешно зарегистрированы')
 
