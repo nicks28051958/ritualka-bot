@@ -481,6 +481,11 @@ async def process_relationship(message: Message, state: FSMContext):
 @router.message(F.text == "❌ Отмена")
 async def cancel_input(message: Message, state: FSMContext):
     """Отмена ввода данных"""
+    current_state = await state.get_state()
+    if current_state and not current_state.startswith(
+        ("ClientRegistration", "FuneralForm", "MemoryRecord", "AIHelper")
+    ):
+        return
     await state.clear()
     await message.answer(
         "❌ Ввод данных отменен.",
